@@ -1,4 +1,4 @@
-package com.example.bettinginfo;
+package com.betting.bettinginfo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

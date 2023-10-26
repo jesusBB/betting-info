@@ -17,6 +17,6 @@ public class StatisticLastMatches {
     //@JsonProperty("type")
     public String type;
     //@JsonProperty("value")
-    public List<String> value;
+    public List<StatsAndTeam> values;
 
 }

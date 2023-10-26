@@ -1,5 +1,6 @@
 package com.betting.bettinginfo.dto.match;
 
+import com.betting.bettinginfo.dto.match.stats.Team;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

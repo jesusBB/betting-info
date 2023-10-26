@@ -1,12 +1,12 @@
 package com.betting.bettinginfo.mappers;
 
-import com.betting.bettinginfo.dto.match.Team;
 import com.betting.bettinginfo.dto.match.stats.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Component
@@ -29,9 +29,9 @@ public class MatchStatsGlobalResponseMapper {
         StatisticLastMatches statisticLastMatches = new StatisticLastMatches();
         statisticLastMatches.setType(response);
 
-        List<String> statValues = getStatValuesByField(team, matchStatsList, key);
+        List<StatsAndTeam> statValues = getStatValuesByField(team, matchStatsList, key);
 
-        statisticLastMatches.setValue(statValues);
+        statisticLastMatches.setValues(statValues);
         statisticLastMatchesList.add(statisticLastMatches);
 
     }
@@ -47,15 +47,31 @@ public class MatchStatsGlobalResponseMapper {
         return statValues;
     }*/
 
-    private static List<String> getStatValuesByField(Team team, List<MatchStats> matchStatsList, String key) {
+    private static List<StatsAndTeam> getStatValuesByField(Team team, List<MatchStats> matchStatsList, String key) {
         Stream<MatchStatsResponse> matchStatsResponseStream = matchStatsList.stream()
                 .flatMap(matchStats -> matchStats.getResponse().stream()
-                        .filter(matchStatsResponse -> matchStatsResponse.getTeam().getId() == team.getId()));
+                .filter(matchStatsResponse -> matchStatsResponse.getTeam().getId() == team.getId()));
+
         Stream<Statistic> statisticStream = matchStatsResponseStream.flatMap(matchStatsResponse -> matchStatsResponse.getStatistics().stream());
+
         List<String> statValues = statisticStream.filter(statistic -> statistic.getType().equals(key))
                 .map(statistic -> statistic.getValue())
                 .collect(Collectors.toList());
-        return statValues;
+
+        List<Team> rivals = matchStatsList.stream()
+                .flatMap(matchStats -> matchStats.getResponse().stream()
+                        .filter(matchStatsResponse -> matchStatsResponse.getTeam().getId() != team.getId()).map(matchStatsResponse -> matchStatsResponse.getTeam())).collect(Collectors.toList());
+
+        //List<StatsAndTeam> statsAndTeamList = rivals.stream().flatMap(rival -> statValues.stream().map(stat -> new StatsAndTeam(rival, stat))).collect(Collectors.toList());
+        List<StatsAndTeam> statsAndTeamList = IntStream.range(0, Math.min(rivals.size(), statValues.size()))
+                .mapToObj(i -> new StatsAndTeam(rivals.get(i).getName(), statValues.get(i)))
+                .collect(Collectors.toList());
+        /*List<String> statValues = statisticStream.filter(statistic -> statistic.getType().equals(key))
+                .map(statistic -> statistic.getValue())
+                .collect(Collectors.toList());*/
+        return statsAndTeamList;
     }
+
+
 
 }

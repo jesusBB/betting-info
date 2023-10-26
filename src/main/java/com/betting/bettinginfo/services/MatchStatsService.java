@@ -1,9 +1,13 @@
 package com.betting.bettinginfo.services;
 
 import com.betting.bettinginfo.clients.FootballAPIClient;
-import com.betting.bettinginfo.dto.match.*;
+import com.betting.bettinginfo.dto.match.Fixture;
+import com.betting.bettinginfo.dto.match.FixtureResponse;
+import com.betting.bettinginfo.dto.match.GlobalFixtureResponse;
+import com.betting.bettinginfo.dto.match.TeamsMatch;
 import com.betting.bettinginfo.dto.match.stats.GlobalMatchStatsResponse;
 import com.betting.bettinginfo.dto.match.stats.MatchStats;
+import com.betting.bettinginfo.dto.match.stats.Team;
 import com.betting.bettinginfo.mappers.MatchStatsGlobalResponseMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;

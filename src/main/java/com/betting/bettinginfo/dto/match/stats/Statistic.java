@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
-public class Statistic {
+public class Statistic implements Serializable {
 
     //@JsonProperty("type")
     public String type;

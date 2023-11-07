@@ -11,21 +11,22 @@ import java.util.stream.Stream;
 
 @Component
 public class MatchStatsGlobalResponseMapper {
-    GlobalMatchStatsResponse response = new GlobalMatchStatsResponse();
-    List<StatisticLastMatches> statisticLastMatchesList = new ArrayList<>();
+
 
     public GlobalMatchStatsResponse map (Team team, List<MatchStats> matchStatsList ){
-        response.setTeam(team);
+        //GlobalMatchStatsResponse response = new GlobalMatchStatsResponse();
+        List<StatisticLastMatches> statisticLastMatchesList = new ArrayList<>();
+        //response.setTeam(team);
 
         for(MatchStatEnum matchStatEnum : MatchStatEnum.values()){
-            getStatForAllGamesByField(team, matchStatsList, matchStatEnum.getKeyJsonField(), matchStatEnum.getResponseJsonField());
+            getStatForAllGamesByField(team, matchStatsList, matchStatEnum.getKeyJsonField(), matchStatEnum.getResponseJsonField(), statisticLastMatchesList);
         }
 
-        response.setStats(statisticLastMatchesList);
-        return response;
+        //response.setStats(statisticLastMatchesList);
+        return GlobalMatchStatsResponse.builder().team(team).stats(statisticLastMatchesList).build();
     }
 
-    private void getStatForAllGamesByField(Team team, List<MatchStats> matchStatsList, String key, String response ){
+    private void getStatForAllGamesByField(Team team, List<MatchStats> matchStatsList, String key, String response,  List<StatisticLastMatches> statisticLastMatchesList ){
         StatisticLastMatches statisticLastMatches = new StatisticLastMatches();
         statisticLastMatches.setType(response);
 
@@ -35,17 +36,6 @@ public class MatchStatsGlobalResponseMapper {
         statisticLastMatchesList.add(statisticLastMatches);
 
     }
-
-    /*private static List<String> getStatValuesByField(Team team, List<MatchStats> matchStatsList, String key) {
-        Stream<MatchStatsResponse> matchStatsResponseStream = matchStatsList.stream()
-                                                                 .flatMap(matchStats -> matchStats.getResponse().stream()
-                                                                         .filter(matchStatsResponse -> matchStatsResponse.getTeam().getId() == team.getId()));
-        Stream<Statistic> statisticStream = matchStatsResponseStream.flatMap(matchStatsResponse -> matchStatsResponse.getStatistics().stream());
-        List<String> statValues = statisticStream.filter(statistic -> statistic.getType().equals(key))
-                                             .map(statistic -> statistic.getValue())
-                                             .collect(Collectors.toList());
-        return statValues;
-    }*/
 
     private static List<StatsAndTeam> getStatValuesByField(Team team, List<MatchStats> matchStatsList, String key) {
         Stream<MatchStatsResponse> matchStatsResponseStream = matchStatsList.stream()
@@ -58,20 +48,13 @@ public class MatchStatsGlobalResponseMapper {
                 .map(statistic -> statistic.getValue())
                 .collect(Collectors.toList());
 
-        List<Team> rivals = matchStatsList.stream()
-                .flatMap(matchStats -> matchStats.getResponse().stream()
-                        .filter(matchStatsResponse -> matchStatsResponse.getTeam().getId() != team.getId()).map(matchStatsResponse -> matchStatsResponse.getTeam())).collect(Collectors.toList());
+        List<Team> rivals = MatchStats.getRivalsTeams(team, matchStatsList);
 
-        //List<StatsAndTeam> statsAndTeamList = rivals.stream().flatMap(rival -> statValues.stream().map(stat -> new StatsAndTeam(rival, stat))).collect(Collectors.toList());
+        //Having 2 collections, this will go by index through all the elements of both collections
         List<StatsAndTeam> statsAndTeamList = IntStream.range(0, Math.min(rivals.size(), statValues.size()))
                 .mapToObj(i -> new StatsAndTeam(rivals.get(i).getName(), statValues.get(i)))
                 .collect(Collectors.toList());
-        /*List<String> statValues = statisticStream.filter(statistic -> statistic.getType().equals(key))
-                .map(statistic -> statistic.getValue())
-                .collect(Collectors.toList());*/
+
         return statsAndTeamList;
     }
-
-
-
 }

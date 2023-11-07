@@ -3,6 +3,7 @@ package com.betting.bettinginfo.services;
 import com.betting.bettinginfo.clients.FootballAPIClient;
 import com.betting.bettinginfo.dto.match.GlobalFixtureResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class MatchService {
         this.footballAPIClient = footballAPIClient;
     }
 
+    @Cacheable(value = "matchesByTeam", key = "#teamId")
     public GlobalFixtureResponse getMatchesByTeam(String teamId){
         return footballAPIClient.getLastMatchesByTeam( apiKey, teamId);
     }

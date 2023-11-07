@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
-public class MatchStatsResponse {
+public class MatchStatsResponse implements Serializable {
 
     //@JsonProperty("team")
     public Team team;

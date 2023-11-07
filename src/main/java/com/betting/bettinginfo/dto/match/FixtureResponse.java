@@ -1,15 +1,15 @@
 package com.betting.bettinginfo.dto.match;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
-public class FixtureResponse {
+@EqualsAndHashCode(exclude = {"league", "teams", "goals", "score"})
+public class FixtureResponse implements Serializable {
     private Fixture fixture;
     private League league;
     private TeamsMatch teams;

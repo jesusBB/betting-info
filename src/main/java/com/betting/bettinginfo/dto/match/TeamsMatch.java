@@ -5,14 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Setter
 @Getter
 @NoArgsConstructor
-public class TeamsMatch {
+public class TeamsMatch implements Serializable {
     private Team home;
     private Team away;
 
-    public static Team getTeamFromMatch(String teamId, TeamsMatch teamsMatch) {
+    public static Team getRivalTeamFromMatch(String teamId, TeamsMatch teamsMatch) {
         return teamId.equals(String.valueOf(teamsMatch.getAway().getId())) ? teamsMatch.getAway() : teamsMatch.getHome();
     }
 }

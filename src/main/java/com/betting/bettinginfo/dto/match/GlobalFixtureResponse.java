@@ -5,13 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
-public class GlobalFixtureResponse {
+public class GlobalFixtureResponse implements Serializable {
     int results;
     List<FixtureResponse> response;
 }

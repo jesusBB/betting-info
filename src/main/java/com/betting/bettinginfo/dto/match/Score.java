@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Setter
 @Getter
 @NoArgsConstructor
-public class Score {
+public class Score implements Serializable {
 
     private Goals halftime;
     private Goals fulltime;

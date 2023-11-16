@@ -8,6 +8,7 @@ import com.betting.bettinginfo.dto.match.stats.GlobalMatchStatsResponse;
 import com.betting.bettinginfo.dto.match.stats.MatchStats;
 import com.betting.bettinginfo.mappers.MatchStatsGlobalResponseMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class PlayerMatchStatsService {
         this.matchStatsGlobalResponseMapper = matchStatsGlobalResponseMapper;
     }
 
-   // @Cacheable(value = "playerStats", key = "{#playerName, #teamId}")
+    @Cacheable(value = "playerStats", key = "{#playerName, #teamId}")
     public GlobalMatchStatsResponse getPlayerStatsByFixtureIdAndPlayerName(String teamId, String playerName, GlobalMatchStatsResponse matchStatsList){
         GlobalFixtureResponse matches = matchService.getMatchesByTeam(teamId);
         List<Long> fixturesId = matchStatsService.getFixturesIdFromMatches(matches);

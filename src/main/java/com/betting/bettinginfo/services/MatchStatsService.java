@@ -10,6 +10,7 @@ import com.betting.bettinginfo.dto.match.stats.MatchStats;
 import com.betting.bettinginfo.dto.match.stats.Team;
 import com.betting.bettinginfo.mappers.MatchStatsGlobalResponseMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class MatchStatsService {
         System.out.println(("Getting match stats for the match " + fixtureId));
         return footballAPIClient.getMatchStats(apiKey, fixtureId);
     }
-    //@Cacheable(value = "matchStatsByTeamId", key = "#teamId")
+    @Cacheable(value = "matchStatsByTeamId"/*, key = "#teamId"*/)
     public GlobalMatchStatsResponse getMatchStatsByTeamId(String teamId){
 
        GlobalFixtureResponse matches = matchService.getMatchesByTeam(teamId);

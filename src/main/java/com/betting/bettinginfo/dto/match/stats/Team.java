@@ -1,10 +1,7 @@
 
 package com.betting.bettinginfo.dto.match.stats;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -12,6 +9,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @ToString
+@EqualsAndHashCode(of = {"id"})
 public class Team implements Serializable {
 
  //   @JsonProperty("id")

@@ -1,10 +1,7 @@
 package com.betting.bettinginfo.dto.match.stats;
 
 import com.betting.bettinginfo.dto.match.player.stats.PlayerFixtureStatsResponse;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode (of = {"team"})
 public class GlobalMatchStatsResponse implements Serializable {
     private Team team;
     private List<StatisticLastMatches> stats;

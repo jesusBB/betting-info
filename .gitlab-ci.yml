@@ -1,0 +1,126 @@
+image: gitlab/dind
+
+#variables:
+#    DOCKER_DRIVER: overlay
+stages:
+    - prepare
+    - build
+    - test
+    - deploy
+
+#image: ubuntu:latest
+.tags_template: &tags
+    tags:
+        - raspberryGitlabRunner
+        #- PI_GitlabRunner
+
+vars:
+    stage: prepare
+    <<: *tags
+    script:
+        - echo "CONTAINER_TO_STOP=$(sudo docker container ls | grep -i 8082 | awk  '{print $1}')" > vars.env
+#       - echo "VERSION=$(get_version.sh)" >> vars.env
+    artifacts:
+        reports:
+            dotenv: vars.env
+CI_Build:
+    stage: build
+    #rules:
+    #    - if: $CI_COMMIT_BRANCH == "master"
+    #      when: manual
+    #tags:
+    #    - CI_RaspberryPI
+    #    - PI_GitlabRunner
+    <<: *tags
+    before_script:
+        - echo "before script"
+        - echo $CI_COMMIT_BRANCH
+        - echo $CONTAINER_TO_STOP
+        - |
+              if grep -q 'CONTAINER_TO_STOP' vars.env; then
+                echo "MY_VARIABLE exists in .env $CONTAINER_TO_STOP"
+              else
+                echo "MY_VARIABLE does not exist in .env $CONTAINER_TO_STOP"
+              fi
+        #- sudo docker login registry.gitlab.com -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    script:
+        - echo "Building"
+        - echo "Commit message $CI_COMMIT_MESSAGE"
+        - echo "CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
+        - echo "Compiling the code..."
+        - mvn clean package
+    artifacts:
+        paths:
+            - target/*.jar
+
+#DOCKER_BUILDKIT=1
+#CI_STOP_CONTAINER_ON_8O80:
+#    variables:
+#        containerOn8080: $(sudo docker container ls | grep -i 8080 | awk  '{print $1}')
+#    stage: deploy
+#    <<: *tags
+#    needs: []
+#    script:
+#        - echo "Container id $containerOn8080"
+CI_STOP_CONTAINER:
+    stage: deploy
+    <<: *tags
+    needs: ['vars']
+    #rules:
+    #    - if: '$CONTAINER_TO_STOP'
+    #      #when: never
+    #dependencies:
+    #    - vars
+    #rules:
+    #    - exists:
+    #          - reports:vars.env
+    script:
+        - echo "Showing container Id $CONTAINER_TO_STOP"
+        - |
+            if [[ -z "${CONTAINER_TO_STOP}" ]]; then
+              echo "MY_VARIABLE exists in .env $CONTAINER_TO_STOP"
+              sudo docker rm -f $CONTAINER_TO_STOP
+            else
+              echo "MY_VARIABLE does not exist in .env $CONTAINER_TO_STOP"
+            fi
+        - sudo docker rm -f $CONTAINER_TO_STOP
+
+CI_DEPLOY:
+    variables:
+        myVariable: testValue
+    stage: deploy
+    only:
+        - master
+    cache:
+        paths:
+            - .m2/repository
+    services:
+        - docker:dind
+    tags:
+        - raspberryGitlabRunner
+        #- PI_GitlabRunner
+    after_script:
+        - echo "after script in deploy stage"
+
+    script:
+        - echo "Building stage"
+        - echo "Variable $myVariable"
+        - sudo docker build -t registry.gitlab.com/jesuli/restful-web-services/restful-web-services .
+        - sudo docker push registry.gitlab.com/jesuli/restful-web-services/restful-web-services
+#        - sudo docker stop $(sudo docker container ls | grep -i 8080 | awk  '{print $1}')
+        - sudo docker run -d -p 8082:8082 registry.gitlab.com/jesuli/restful-web-services/restful-web-services
+#    environment:
+#       name: prod
+#        url: http://<ip>:8080 #this would be the ip where the docker container is running and the listening port of the instance
+#--platform linux/armv7
+#CI_TEST:
+#    stage: test
+#    tags:
+#        - CI_RaspberryPI
+#        - PI_GitlabRunner
+#    #except:
+#    #    - master
+#    needs: ['CI_DEPLOY'] #Empty needs means that this job does not have any dependency with other jobs so it will run in parallel as it is an independent job. If a job is specified inside the brackets, the job will wait for the job to finish before it starts
+#    script:
+#        - echo "Running test stage"
+#        - sudo docker image inspect registry.gitlab.com/jesuli/restful-web-services/restful-web-services
